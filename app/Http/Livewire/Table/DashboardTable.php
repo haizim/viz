@@ -6,6 +6,7 @@ use App\Models\Dashboard;
 use Laravolt\Suitable\Columns\RowNumber;
 use Laravolt\Suitable\Columns\Text;
 use Laravolt\Suitable\Columns\RestfulButton;
+use Laravolt\Suitable\Columns\Button;
 use Laravolt\Ui\TableView;
 
 class DashboardTable extends TableView
@@ -28,7 +29,8 @@ class DashboardTable extends TableView
             RowNumber::make('No.'),
             Text::make('name', 'Nama')->sortable(),
             Text::make('user.name', 'Owner')->sortable(),
-            RestfulButton::make('dashboard', 'Action'),
+            RestfulButton::make('dashboard', 'Action')->except('show'),
+            Button::make(fn ($dashboard) => route('dashboard-show', $dashboard['id']), '')->label('View')->icon('eye'),
         ];
     }
 }

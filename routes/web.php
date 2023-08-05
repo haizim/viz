@@ -18,7 +18,7 @@ Route::middleware(['auth', 'verified'])
         }
     );
 
-Route::get('/d/{id}', DashboardShowController::class)->name('dashboardShow');
+Route::get('/d/{id}', DashboardShowController::class)->name('dashboard-show');
 
 include __DIR__.'/auth.php';
 include __DIR__.'/my.php';
