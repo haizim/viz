@@ -152,7 +152,7 @@
                         
                         createChart_{{ $r_i }}(type_{{ $r_i }})
                         
-                        if (type_{{ $r_i }} != 0) {
+                        if ({{ $item["query"] }} != 0) {
                             runQuery_{{ $r_i }}({{ $item["query"] }})
                         }
                         
