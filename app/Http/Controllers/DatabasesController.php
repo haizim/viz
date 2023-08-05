@@ -40,7 +40,9 @@ class DatabasesController extends Controller
      */
     public function store(DatabasesStoreRequest $request)
     {
-        $database = Databases::create($request->validated());
+        $data = array_merge(['user_id' => auth()->id()], $request->validated());
+
+        $database = Databases::create($data);
 
         return redirect()->route('databases.index')->withSuccess('Database berhasil ditambahkan');
     }
@@ -78,7 +80,9 @@ class DatabasesController extends Controller
      */
     public function update(DatabasesStoreRequest $request, Databases $database)
     {
-        $database->update($request->validated());
+        $data = array_merge(['user_id' => auth()->id()], $request->validated());
+
+        $database->update($data);
         
         return redirect()->route('databases.index')->withSuccess('Database berhasil diubah');
     }

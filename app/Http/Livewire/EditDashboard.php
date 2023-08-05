@@ -21,7 +21,8 @@ class EditDashboard extends Component
     ];
     public $componentsJson = "{}";
     public $queries = [];
-    public $chartTypes = ["number", "bar", "doughnut", "line", "pie", "polarArea", "radar"]; // others :  "bubble", "scatter" 
+    public $chartTypes = ["number", "bar", "doughnut", "line", "pie", "polarArea", "radar"];
+    // others chart :  "bubble", "scatter" 
 
     public function render()
     {
@@ -35,7 +36,13 @@ class EditDashboard extends Component
             $this->components = $componentsUse;
             $this->componentsJson = json_encode($this->components);
         }
-        $this->queries = Queries::get(['id', 'name'])->toArray();
+
+        $query = Queries::query();
+
+        if (!auth()->user()->can('queries::manage-all')) {
+            $query = $query->where('user_id', auth()->id());
+        }
+        $this->queries = $query->get(['id', 'name'])->toArray();
     }
     
     public function updatedComponents()

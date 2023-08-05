@@ -26,16 +26,11 @@ class QueriesController extends Controller
      */
     public function create()
     {
+        $userId = auth()->id();
         $databasesQuery = "select id, name from databases";
-        $databases = Databases::get(['id', 'name'])->toArray();
-        
-        $dbList = [];
+        $databasesQuery .= auth()->user()->can('databases::manage-all') ? "" : " where user_id='$userId'";
 
-        foreach ($databases as $db) {
-            $dbList[$db['id']] = $db['name'];
-        }
-
-        return view('queries.create', compact(['dbList', 'databasesQuery']));
+        return view('queries.create', compact(['databasesQuery']));
     }
 
     /**
@@ -72,7 +67,9 @@ class QueriesController extends Controller
      */
     public function edit(Queries $query)
     {
+        $userId = auth()->id();
         $databasesQuery = "select id, name from databases";
+        $databasesQuery .= auth()->user()->can('databases::manage-all') ? "" : " where user_id='$userId'";
 
         return view('queries.edit', compact(['databasesQuery', 'query']));
     }
