@@ -1,6 +1,3 @@
-{{-- <link href="/css/prism.css" rel="stylesheet" />
-<script src="/js/codeflask.min.js"></script> 
-<script src="/js/prism.js"></script>  --}}
 <script src="/js/codemirror.js"></script> 
 <link href="/css/codemirror.css" rel="stylesheet" />
 
@@ -11,18 +8,10 @@
 {!! form()->dropdownDB('database_id', $databasesQuery, $keyColumn = 'id', $valueColumn = 'name')->label('Database')->id('database_id')->required() !!}
 
 {!! form()->textarea('query')->label('Query')->id('query')->required() !!}
-{{-- <textarea id="code"></textarea> --}}
 
 <button type="button" class="ui primary basic button" id="run">Jalankan</button>
 
 <table id="tableResult" class="display nowrap" style="width: 100%"></table>
-
-{{-- @livewire('edit-query') --}}
-
-{{-- <div class="field">
-    <label>Query</label>
-    <textarea id="code"></textarea>
-</div> --}}
 
 {!! form()->action(form()->button('Simpan')->id('simpan')->addClass('primary'), form()->button('Batal')) !!}
 

@@ -22,7 +22,7 @@
                     </span>
                 </div>
                 {{-- </center> --}}
-                <div class="row baris">
+                <div class="ui equal width grid baris">
                     @forelse ($row['items'] as $i => $item)
                     
                     @php
@@ -32,12 +32,17 @@
                     $width = $item['width'] ?? "25";
                     @endphp
                     
-                    <div class="col-sm p-1" style="max-width:{{ $width }}%">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 id="header-{{ $rsi }}"></h4>
+                    <div class="column p-1" style="max-width:{{ $width }}%">
+
+                        <div class="ui card" style="width: 100%">
+                            
+                            <div class="content">
+                                <div class="header">
+                                    <h4 id="header-{{ $rsi }}"></h4>
+                                </div>
                             </div>
-                            <div class="card-body">
+                            
+                            <div class="content">
                                 <div class="fields editor-item">
                                     <div class="field">
                                         <select class="ui search dropdown" wire:model="components.{{ $rii }}.type" id="type-{{ $rsi }}">
@@ -82,6 +87,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     
                     <script>
