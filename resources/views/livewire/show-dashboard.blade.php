@@ -22,7 +22,7 @@
                                     <h4 id="header-{{ $rsi }}"></h4>
                                 </div>
                                 <div class="column" style="text-align: right; width:20%">
-                                    <button class="mini ui icon button" onclick="showQuery('query-{{ $rsi }}')">
+                                    <button id="btn-query-{{ $rsi }}" class="mini ui icon button" onclick="showQuery('query-{{ $rsi }}')" disabled>
                                         <x-volt-icon name="code"></x-volt-icon>
                                     </button>
                                 </div>
@@ -82,6 +82,7 @@
                 
                 function runQuery_{{ $r_i }}(id) {
                     $("#header-{{ $rsi }}").text("mengambil data...")
+                    $('#btn-query-{{ $rsi }}').prop('disabled', true)
                     $.get( "/api/run-query-by-id/"+id)
                     .done(function( data ) {
                         // result = JSON.parse(data)
@@ -95,6 +96,7 @@
                         $("#header-{{ $rsi }}").text(data.name)
                         
                         $("#query-{{ $rsi }}").val(data.query)
+                        $('#btn-query-{{ $rsi }}').prop('disabled', false)
                         visualize_{{ $r_i }}()
                     })
                 }
