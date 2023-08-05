@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Table;
 
 use App\Enums\DatabasesType;
+use App\Models\Databases;
 use Laravolt\Suitable\Columns\Raw;
 use Laravolt\Suitable\Columns\RowNumber;
 use Laravolt\Suitable\Columns\Text;
@@ -13,7 +14,13 @@ class DatabasesTable extends TableView
 {
     public function data()
     {
-        return \App\Models\Databases::paginate(5);
+        $query = Databases::query();
+
+        if (!auth()->user()->can('databases::manage-all')) {
+            $query = $query->where('user_id', auth()->id());
+        }
+
+        return $query->paginate(5);
     }
 
     public function columns(): array
@@ -29,6 +36,7 @@ class DatabasesTable extends TableView
                 },
                 'Tipe Database'
             ),
+            Text::make('owner.name', 'Owner')->sortable(),
             Text::make('host', 'Host')->sortable(),
             Text::make('port', 'Port'),
             Text::make('dbname', 'Nama Database')->sortable(),

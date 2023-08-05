@@ -4,7 +4,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardShowController;
 use App\Http\Controllers\Home;
 use App\Http\Controllers\DatabasesController;
-use App\Http\Controllers\Manage\Connections;
 use App\Http\Controllers\QueriesController;
 
 Route::redirect('/', 'auth/login');
@@ -13,8 +12,6 @@ Route::middleware(['auth', 'verified'])
     ->group(
         function () {
             Route::get('/home', Home::class)->name('home');
-            Route::get('/connections', Connections::class)->name('connections');
-            // Route::get('/databases', Connections::class)->name('databases');
             Route::resource('databases', DatabasesController::class);
             Route::resource('queries', QueriesController::class);
             Route::resource('dashboard', DashboardController::class);

@@ -19,4 +19,9 @@ class Queries extends Model
     {
         return $this->hasOne(Databases::class, 'id', 'database_id');
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

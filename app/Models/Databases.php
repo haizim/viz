@@ -13,5 +13,10 @@ class Databases extends Model
 
     protected $table = 'databases';
 
-    protected $fillable = ['name', 'host', 'port', 'type', 'dbname', 'user', 'password', 'keterangan'];
+    protected $fillable = ['name', 'host', 'port', 'type', 'dbname', 'user', 'password', 'keterangan', 'user_id'];
+
+    public function owner()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

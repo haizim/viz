@@ -15,6 +15,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // dd(auth()->user()->can('dashboard::manage-all'));
         return view('dashboard.index');
     }
 

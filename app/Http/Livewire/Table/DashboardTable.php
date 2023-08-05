@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Table;
 
+use App\Models\Dashboard;
 use Laravolt\Suitable\Columns\RowNumber;
 use Laravolt\Suitable\Columns\Text;
 use Laravolt\Suitable\Columns\RestfulButton;
@@ -11,7 +12,14 @@ class DashboardTable extends TableView
 {
     public function data()
     {
-        return \App\Models\Dashboard::paginate(5);
+        
+        $query = Dashboard::query();
+
+        if (!auth()->user()->can('dashboard::manage-all')) {
+            $query = $query->where('user_id', auth()->id());
+        }
+
+        return $query->paginate(5);
     }
 
     public function columns(): array
@@ -19,6 +27,7 @@ class DashboardTable extends TableView
         return [
             RowNumber::make('No.'),
             Text::make('name', 'Nama')->sortable(),
+            Text::make('user.name', 'Owner')->sortable(),
             RestfulButton::make('dashboard', 'Action'),
         ];
     }
