@@ -20,7 +20,7 @@ class DatabasesTable extends TableView
             $query = $query->where('user_id', auth()->id());
         }
 
-        return $query->paginate(5);
+        return $query->orderBy('updated_at', 'desc')->paginate(5);
     }
 
     public function columns(): array

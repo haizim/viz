@@ -1,7 +1,7 @@
 <div class="editor">
     <div>
         @foreach ($components as $r => $row)
-        <div class="ui equal width grid baris">
+        <div class="ui stackable equal width grid baris">
             @forelse ($row['items'] as $i => $item)
             
             @php
@@ -9,12 +9,21 @@
             $rsi = $r."-$i";
             $rii = $r.'.items.'.$i;
             $width = $item['width'] ?? "25";
+            $display = [];
+            $hide = "display: none;";
+            
+            if ($item['type'] == 'text') {
+                $display = [$hide, ""];
+            } else {
+                $display = ["", $hide];
+            }
+            
             @endphp
             
-            <div class="column p-1" style="max-width:{{ $width }}%">
-
+            <div class="column p-1 item" style="max-width:{{ $width }}%">
+                
                 <div class="ui card" style="width: 100%">
-
+                    
                     <div class="content">
                         <div class="header">
                             <div class="ui equal width grid">
@@ -29,31 +38,33 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <div class="content">
                         <div class="chart-container" style="height:{{ $row['height'] }}">
-                            <canvas id="chart-{{ $rsi }}"></canvas>
-                        </div>
-                        
-                        <div class="ui statistic" style="display: none">
-                            <div class="value" id="value-{{ $rsi }}">
-                                40,509
-                            </div>
+                            <canvas id="chart-{{ $rsi }}"  style="{{ $display[0] }}"></canvas>
+                            
+                            <center>
+                                <div class="ui statistic" id="boxtext-{{ $rsi }}" style="{{ $display[1] }}">
+                                    <div class="value" id="text-{{ $rsi }}">
+                                        text-{{ $rsi }}
+                                    </div>
+                                </div>
+                            </center>
+                            
                         </div>
                         
                         <textarea id="query-{{ $rsi }}" style="display: none"></textarea>
                     </div>
                 </div>
-
+                
             </div>
             
             <script>
                 const ctx_{{ $r_i }} = document.getElementById('chart-{{ $rsi }}');
-                console.log('ctx_{{ $r_i }} : ', ctx_{{ $r_i }})
                 
                 let type_{{ $r_i }} = '{{ $item["type"] }}'
-                let labels_{{ $r_i }}
-                let dataset_{{ $r_i }}
+                let labels_{{ $r_i }} = type_{{ $r_i }} == 'text' ? [0] : null
+                let dataset_{{ $r_i }} 
                 
                 var chart_{{ $r_i }}
                 function createChart_{{ $r_i }}(type, label, dataset) {
@@ -85,13 +96,8 @@
                     $('#btn-query-{{ $rsi }}').prop('disabled', true)
                     $.get( "/api/run-query-by-id/"+id)
                     .done(function( data ) {
-                        // result = JSON.parse(data)
-                        console.log(data)
                         labels_{{ $r_i }} = data.label
                         dataset_{{ $r_i }} = transformDataset(type_{{ $r_i }}, data.data, data.keys)
-                        console.log("type :", type_{{ $r_i }}, "label :", labels_{{ $r_i }})
-                        console.log("data.dataset : ", data.dataset)
-                        console.log("dataset transformed :", dataset_{{ $r_i }})
                         
                         $("#header-{{ $rsi }}").text(data.name)
                         
@@ -101,16 +107,20 @@
                     })
                 }
                 
-                function visualize_{{ $r_i }}() {
-                    if (type_{{ $r_i }} == 'number') {
-                        
+                function visualize_{{ $r_i }}(isLoad = false) {
+                    if (type_{{ $r_i }} == 'text') {
+                        $("#text-{{ $rsi }}").text(labels_{{ $r_i }}[0].toLocaleString())
                     } else {
-                        chart_{{ $r_i }}.destroy()
-                        createChart_{{ $r_i }}(type_{{ $r_i }}, labels_{{ $r_i }}, dataset_{{ $r_i }})
+                        if (isLoad) {
+                            createChart_{{ $r_i }}(type_{{ $r_i }})
+                        } else {
+                            chart_{{ $r_i }}.destroy()
+                            createChart_{{ $r_i }}(type_{{ $r_i }}, labels_{{ $r_i }}, dataset_{{ $r_i }})
+                        }
                     }
                 }
                 
-                createChart_{{ $r_i }}(type_{{ $r_i }})
+                visualize_{{ $r_i }}(true)
                 
                 if (type_{{ $r_i }} != 0) {
                     runQuery_{{ $r_i }}({{ $item["query"] }})
@@ -123,18 +133,19 @@
         </div>
         @endforeach
     </div>
-
+    
     <div class="ui modal" id="modal-query">
         <div class="header">Query</div>
         <div class="content">
             <p>
-                <textarea id="show-query-{{ $rsi }}" rows="10" style="width: 100%" readonly></textarea>
+                <textarea id="show-query-{{ $rsi }}" style="width: 100%; height:50vh" readonly></textarea>
             </p>
         </div>
         <div class="actions">
             <div class="ui cancel button">Close</div>
         </div>
     </div>
+
     <script>
         const pluck = (arr, key) => arr.map(i => i[key]);
         
@@ -152,7 +163,6 @@
                     result[i-1]['data'] = pluck(data, key)
                 }
                 if (typeof data[0][keys[0]] != "number") {
-                    console.log("transformDataset line type : not number")
                     result = pivotDataLine(result)
                 }
                 break;
@@ -188,7 +198,6 @@
                     result[indexNow].push(elem)
                 }
             }
-            console.log("result pivotDataLine :", result)
             dataset = []
             
             for (const [key, value] of Object.entries(result)) {
@@ -200,15 +209,12 @@
                 dataset.push(ds)
             }
             
-            console.log("dataset pivotDataLine :", dataset)
-            
             return dataset
         }
         
         function showQuery(id)
         {
             query = $("#"+id).val()
-            console.log("query : ", query)
             $("#show-query-{{ $rsi }}").val(query)
             $("#modal-query").modal('show')
         }

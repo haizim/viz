@@ -21,7 +21,7 @@ class EditDashboard extends Component
     ];
     public $componentsJson = "{}";
     public $queries = [];
-    public $chartTypes = ["number", "bar", "doughnut", "line", "pie", "polarArea", "radar"];
+    public $chartTypes = ["table", "text", "bar", "doughnut", "line", "pie", "polarArea", "radar"];
     // others chart :  "bubble", "scatter" 
 
     public function render()
@@ -43,6 +43,11 @@ class EditDashboard extends Component
             $query = $query->where('user_id', auth()->id());
         }
         $this->queries = $query->get(['id', 'name'])->toArray();
+    }
+
+    public function dehydrate()
+    {
+        $this->dispatchBrowserEvent('dehydrate');
     }
     
     public function updatedComponents()
@@ -70,6 +75,8 @@ class EditDashboard extends Component
     {
         if ($row > 0){
             [$this->components[$row], $this->components[$row-1]] = [$this->components[$row-1], $this->components[$row]];
+            $this->updatedComponents();
+            $this->dispatchBrowserEvent('movePrevRow', ['row' => $row]);
         }
     }
 
@@ -77,6 +84,8 @@ class EditDashboard extends Component
     {
         if (count($this->components) > $row+1){
             [$this->components[$row], $this->components[$row+1]] = [$this->components[$row+1], $this->components[$row]];
+            $this->updatedComponents();
+            $this->dispatchBrowserEvent('moveNextRow', ['row' => $row]);
         }
     }
 
@@ -84,7 +93,7 @@ class EditDashboard extends Component
     public function newColumn()
     {
         $types = $this->chartTypes;
-        $type = $types[rand(1, count($types)-1)];
+        $type = $types[rand(2, count($types)-1)];
         return [
             "query" => 0,
             "type" => $type,
@@ -95,26 +104,41 @@ class EditDashboard extends Component
     public function addCol($row)
     {
         array_push($this->components[$row]['items'], $this->newColumn());
-        if(count($this->components[$row]) < 3) {
-        }
     }
 
     public function delCol($row, $col)
     {
-        unset($this->components[$row][$col]);
+        unset($this->components[$row]['items'][$col]);
+        $this->updatedComponents();
     }
 
     public function movePrevCol($row, $col)
     {
         if ($col > 0){
-            [$this->components[$row][$col], $this->components[$row][$col-1]] = [$this->components[$row][$col-1], $this->components[$row][$col]];
+            [
+                $this->components[$row]['items'][$col],
+                $this->components[$row]['items'][$col-1]
+            ] = [
+                $this->components[$row]['items'][$col-1],
+                $this->components[$row]['items'][$col]
+            ];
+            $this->updatedComponents();
+            $this->dispatchBrowserEvent('movePrevCol', ['row' => $row, 'col' => $col]);
         }
     }
 
     public function moveNextCol($row, $col)
     {
-        if (count($this->components[$row]) > $col+1){
-            [$this->components[$row][$col], $this->components[$row][$col+1]] = [$this->components[$row][$col+1], $this->components[$row][$col]];
+        if (count($this->components[$row]['items']) > $col+1){
+            [
+                $this->components[$row]['items'][$col],
+                $this->components[$row]['items'][$col+1]
+            ] = [
+                $this->components[$row]['items'][$col+1],
+                $this->components[$row]['items'][$col]
+            ];
+            $this->updatedComponents();
+            $this->dispatchBrowserEvent('moveNextCol', ['row' => $row, 'col' => $col]);
         }
     }
 }

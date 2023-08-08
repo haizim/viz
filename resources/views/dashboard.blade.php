@@ -1,5 +1,4 @@
 <x-volt-base :title="$dashboard->name">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .baris{
             padding: 0 5%;
@@ -31,8 +30,36 @@
         .editor * {
             transition: .5s all;
         }
+        @media (orientation:portrait){
+            .item {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
     </style>
-    <x-volt-panel :title="$dashboard->name" icon="eye">
-        @livewire('show-dashboard', ["components" => $dashboard->components])
-    </x-volt-panel>
+    
+    <header class="ui menu fixed top borderless" id="topbar">
+        <div class="menu p-l-2" id="titlebar">
+            <div class="left menu">
+                <div class="item">
+                    {{ config('laravolt.ui.brand_name') }}
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    @include('laravolt::menu.actionbar', ['title' => $dashboard->name])
+
+    <div class="layout--app">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <div class="content">
+            <div class="content__inner">
+                <main class="ui container-fluid content__body p-3">
+                    <x-volt-panel>
+                        @livewire('show-dashboard', ["components" => $dashboard->components])
+                    </x-volt-panel>
+                </main>
+            </div>
+        </div>
+    </div>
 </x-volt-base>
