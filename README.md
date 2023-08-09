@@ -10,7 +10,7 @@
 ## Server Requirements
 1. PHP 8.x
 1. Composer 2
-1. PostgreSQL (recommended) or MariaDB
+1. PostgreSQL
 
 ## Local Setup
 1. Clone repository
