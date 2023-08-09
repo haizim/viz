@@ -76,9 +76,7 @@ class DashboardController extends Controller
      */
     public function update(DashboardStoreRequest $request, Dashboard $dashboard)
     {
-        $data = array_merge(['user_id' => auth()->id()], $request->validated());
-
-        $dashboard->update($data);
+        $dashboard->update($request->validated());
         
         return redirect()->route('dashboard.index')->withSuccess('Dashboard berhasil diubah');
     }

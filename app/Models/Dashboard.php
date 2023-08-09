@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravolt\Suitable\AutoFilter;
+use Laravolt\Suitable\AutoSearch;
 use Laravolt\Suitable\AutoSort;
 
 class Dashboard extends Model
 {
     use HasFactory;
-    use AutoSort;
+    use AutoSort, AutoFilter, AutoSearch;
 
     protected $table = 'dashboard';
 

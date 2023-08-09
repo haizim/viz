@@ -20,7 +20,13 @@ class DatabasesTable extends TableView
             $query = $query->where('user_id', auth()->id());
         }
 
-        return $query->orderBy('updated_at', 'desc')->paginate(5);
+        if ($this->sortPayload()['sort']) {
+            $query = $query->autoSort($this->sortPayload());
+        } else {
+            $query = $query->orderBy('updated_at', 'desc');
+        }
+
+        return $query->paginate(5);
     }
 
     public function columns(): array

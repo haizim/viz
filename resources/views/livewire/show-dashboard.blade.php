@@ -1,21 +1,37 @@
 <div class="editor">
     <div>
+        <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <script src="/js/jquery.dataTables.min.js"></script>
+        <script>
+            let datas = [];
+        </script>
         @foreach ($components as $r => $row)
         <div class="ui stackable equal width grid baris">
+            <script>
+                datas[{{ $r }}] = [];
+            </script>
             @forelse ($row['items'] as $i => $item)
             
             @php
             $r_i = $r."_$i";
+            $rai = "[".$r."][$i"."]";
             $rsi = $r."-$i";
             $rii = $r.'.items.'.$i;
             $width = $item['width'] ?? "25";
             $display = [];
             $hide = "display: none;";
             
-            if ($item['type'] == 'text') {
-                $display = [$hide, ""];
-            } else {
-                $display = ["", $hide];
+            switch ($item['type']) {
+                case 'text':
+                $display = [$hide, "", $hide];
+                break;
+                case 'table':
+                $display = [$hide, $hide, ""];
+                break;
+                
+                default:
+                $display = ["", $hide, $hide];
+                break;
             }
             
             @endphp
@@ -51,6 +67,10 @@
                                 </div>
                             </center>
                             
+                            <div id="boxtable-{{ $rsi }}" style="{{ $display[2] }}">
+                                <table id="table-{{ $rsi }}" class="display nowrap" style="width: 100%;"></table>
+                            </div>
+                            
                         </div>
                         
                         <textarea id="query-{{ $rsi }}" style="display: none"></textarea>
@@ -62,13 +82,17 @@
             <script>
                 const ctx_{{ $r_i }} = document.getElementById('chart-{{ $rsi }}');
                 
-                let type_{{ $r_i }} = '{{ $item["type"] }}'
-                let labels_{{ $r_i }} = type_{{ $r_i }} == 'text' ? [0] : null
-                let dataset_{{ $r_i }} 
+                datas{{ $rai }} = {
+                    type: '{{ $item["type"] }}',
+                    labels: '{{ $item["type"] }}' == 'text' ? [0] : null,
+                    dataset: null,
+                    title: '',
+                    raw: null
+                }
                 
                 var chart_{{ $r_i }}
                 function createChart_{{ $r_i }}(type, label, dataset) {
-                    label = label ?? ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'] 
+                    label = label ?? ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
                     dataset = dataset ?? [{
                         label: '# of Votes',
                         data: Array.from({length: 6}, () => Math.floor(Math.random() * 100 + 100)),
@@ -91,13 +115,45 @@
                     })
                 }
                 
+                function createTable_{{ $r_i }}(data = null) {
+                    let dataSet = [["Belum ada data"]]
+                    let cols = [{ 'title': 'Hasil' }]
+                    
+                    if (data) {
+                        dataSet = transformDataset('table', data)
+                        columns = Object.keys(data[0])
+                        cols = columns.map((val) => ({ 'title': val }))
+                        cols = [{'title': '#'}].concat(cols)
+                    }
+                    
+                    table_{{ $r_i }} = $('#table-{{ $rsi }}').DataTable( {
+                        data: dataSet,
+                        columns: cols,
+                        searching: false,
+                        info: false,
+                        ordering: false,
+                        "columnDefs": [
+                            { "width": "20px", "targets": 0 }
+                        ],
+                        // pageLength: 5,
+                        // dom: 'rtip',
+                        lengthMenu: [5, 10, 20, 50, 100, 200, 500],
+                        scrollX: true
+                    } )
+                }
+                
                 function runQuery_{{ $r_i }}(id) {
                     $("#header-{{ $rsi }}").text("mengambil data...")
                     $('#btn-query-{{ $rsi }}').prop('disabled', true)
                     $.get( "/api/run-query-by-id/"+id)
                     .done(function( data ) {
-                        labels_{{ $r_i }} = data.label
-                        dataset_{{ $r_i }} = transformDataset(type_{{ $r_i }}, data.data, data.keys)
+                        datas{{ $rai }} = {
+                            type: '{{ $item["type"] }}',
+                            labels: data.label,
+                            dataset: transformDataset(datas{{ $rai }}.type, data.data, data.keys),
+                            title: data.name,
+                            raw: data.data
+                        }
                         
                         $("#header-{{ $rsi }}").text(data.name)
                         
@@ -107,24 +163,30 @@
                     })
                 }
                 
-                function visualize_{{ $r_i }}(isLoad = false) {
-                    if (type_{{ $r_i }} == 'text') {
-                        $("#text-{{ $rsi }}").text(labels_{{ $r_i }}[0].toLocaleString())
-                    } else {
-                        if (isLoad) {
-                            createChart_{{ $r_i }}(type_{{ $r_i }})
-                        } else {
-                            chart_{{ $r_i }}.destroy()
-                            createChart_{{ $r_i }}(type_{{ $r_i }}, labels_{{ $r_i }}, dataset_{{ $r_i }})
-                        }
+                function visualize_{{ $r_i }}() {
+                    const type = datas{{ $rai }}.type
+                    const labels = datas{{ $rai }}.labels
+                    const dataset = datas{{ $rai }}.dataset
+                    const title = datas{{ $rai }}.title
+                    const raw = datas{{ $rai }}.raw
+                    
+                    switch (type) {
+                        case 'text':
+                        $("#text-{{ $rsi }}").text(labels[0].toLocaleString())
+                        break;
+                        
+                        case 'table':
+                        createTable_{{ $r_i }}(raw)
+                        break;
+                        
+                        default:
+                        createChart_{{ $r_i }}(type, labels, dataset)
+                        break;
                     }
                 }
                 
-                visualize_{{ $r_i }}(true)
+                runQuery_{{ $r_i }}({{ $item["query"] }})
                 
-                if (type_{{ $r_i }} != 0) {
-                    runQuery_{{ $r_i }}({{ $item["query"] }})
-                }
             </script>
             
             @empty
@@ -145,11 +207,11 @@
             <div class="ui cancel button">Close</div>
         </div>
     </div>
-
+    
     <script>
         const pluck = (arr, key) => arr.map(i => i[key]);
         
-        function transformDataset(type, data, keys)
+        function transformDataset(type, data, keys=[])
         {
             let result = []
             let key = ""
@@ -165,6 +227,21 @@
                 if (typeof data[0][keys[0]] != "number") {
                     result = pivotDataLine(result)
                 }
+                break;
+                
+                case "table":
+                let r = 0
+                let c = 1
+                data.forEach(i => {
+                    c = 1
+                    result[r] = []
+                    result[r][0] = r+1
+                    Object.values(i).forEach(j => {
+                        result[r][c] = j
+                        c++
+                    });
+                    r++
+                });
                 break;
                 
                 default:

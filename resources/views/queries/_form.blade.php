@@ -50,9 +50,9 @@ $('#run').on('click', function () {
 
     $.post( "/api/run-query", {db: $('#database_id').val(), query: query} )
         .done(function( data ) {
-            let dataSet = data.map((val) => (Object.values(val)))
-            let columns = Object.keys(data[0])
-            let cols = columns.map((val) => ({ 'title': val }))
+            dataSet = data.map((val) => (Object.values(val)))
+            columns = Object.keys(data[0])
+            cols = columns.map((val) => ({ 'title': val }))
             
             table.destroy()
             $('#tableResult').empty()

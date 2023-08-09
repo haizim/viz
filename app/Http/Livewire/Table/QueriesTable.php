@@ -17,8 +17,14 @@ class QueriesTable extends TableView
         if (!auth()->user()->can('queries::manage-all')) {
             $query = $query->where('user_id', auth()->id());
         }
+        
+        if ($this->sortPayload()['sort']) {
+            $query = $query->autoSort($this->sortPayload());
+        } else {
+            $query = $query->orderBy('updated_at', 'desc');
+        }
 
-        return $query->orderBy('updated_at', 'desc')->paginate(5);
+        return $query->paginate(5);
     }
 
     public function columns(): array

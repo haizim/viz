@@ -80,9 +80,7 @@ class DatabasesController extends Controller
      */
     public function update(DatabasesStoreRequest $request, Databases $database)
     {
-        $data = array_merge(['user_id' => auth()->id()], $request->validated());
-
-        $database->update($data);
+        $database->update($request->validated());
         
         return redirect()->route('databases.index')->withSuccess('Database berhasil diubah');
     }

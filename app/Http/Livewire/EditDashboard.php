@@ -42,7 +42,7 @@ class EditDashboard extends Component
         if (!auth()->user()->can('queries::manage-all')) {
             $query = $query->where('user_id', auth()->id());
         }
-        $this->queries = $query->get(['id', 'name'])->toArray();
+        $this->queries = $query->orderBy('name', 'asc')->get(['id', 'name'])->toArray();
     }
 
     public function dehydrate()

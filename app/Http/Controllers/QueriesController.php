@@ -83,9 +83,7 @@ class QueriesController extends Controller
      */
     public function update(QueriesStoreRequest $request, Queries $query)
     {
-        $data = array_merge(['user_id' => auth()->id()], $request->validated());
-
-        $query->update($data);
+        $query->update($request->validated());
         
         return redirect()->route('queries.index')->withSuccess('Query berhasil diubah');
     }
