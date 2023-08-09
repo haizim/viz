@@ -1,8 +1,12 @@
 # Query Visualization
 
 ## Demo
-[https://viz.haizim.one/](https://viz.haizim.one/)
+- email : `demo@haizim.one`
+- password : `Qwarty1234`
+- [https://viz.haizim.one/](https://viz.haizim.one/)
 
+## Demo Dashboard
+[https://viz.haizim.one/d/6](https://viz.haizim.one/d/6)
 ## Server Requirements
 1. PHP 8.x
 1. Composer 2
