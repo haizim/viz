@@ -10,7 +10,7 @@ use PDO;
 
 class ApiController extends Controller
 {
-    public function queryRunner($database_id, $query)
+    private function queryRunner($database_id, $query)
     {
         $db = Databases::find($database_id);
         
@@ -28,6 +28,25 @@ class ApiController extends Controller
         $result = $run->fetchAll(PDO::FETCH_ASSOC);
         
         return $result;
+    }
+
+    public function testConnection(Request $request)
+    {
+        $type = strtolower($request['type']);
+        $host = $request['host'];
+        $port = $request['port'];
+        $dbName = $request['dbname'];
+        $user = $request['user'];
+        $password = $request['password'];
+
+        $dsn = "$type:host=$host;port=$port;dbname=$dbName;";
+        $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
+        $now = $pdo->query('SELECT NOW()')->fetchColumn();
+
+        if ($now) {
+            return true;
+        }
     }
 
     public function runQuery(Request $request)

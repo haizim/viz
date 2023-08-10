@@ -30,7 +30,8 @@
         .editor * {
             transition: .5s all;
         }
-        @media (orientation:portrait){
+
+        @media (max-width: 600px){
             .item {
                 width: 100% !important;
                 max-width: 100% !important;

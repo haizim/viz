@@ -1,4 +1,4 @@
-<div class="editor">
+<div class="editor" id='main-visualisation'>
     <div>
         <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
         <script src="/js/jquery.dataTables.min.js"></script>

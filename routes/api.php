@@ -21,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/run-query', [ApiController::class, 'runQuery'])->name('runQuery');
 Route::post('/run-query-datatable', [ApiController::class, 'runQueryDatatable'])->name('runQuery');
 Route::get('/run-query-by-id/{id}', [ApiController::class, 'runQueryById'])->name('runQueryById');
+Route::post('/test-connection', [ApiController::class, 'testConnection'])->name('testConnection');

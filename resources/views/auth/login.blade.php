@@ -42,4 +42,10 @@
     @endif
     {!! form()->close() !!}
 
+    {{-- remove this section if you don't need --}}
+    @section('left-side')
+        <h3>Demo</h3>
+        Email: demo@haizim.one<br>
+        Password: Qwarty1234
+    @endsection
 </x-volt-auth>
